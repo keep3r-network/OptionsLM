@@ -548,7 +548,7 @@ interface v3oracle {
     function assetToAsset(address from, uint amount, address to, uint twap_duration) external view returns (uint);
 }
 
-contract OptionsLM is ERC721("Options LM", "oLM") {
+contract OptionsLM is ERC721 {
     address immutable public reward;
     address immutable public stake;
     address immutable public buyWith;
@@ -587,7 +587,14 @@ contract OptionsLM is ERC721("Options LM", "oLM") {
     event Created(address indexed owner, uint amount, uint strike, uint expiry, uint id);
     event Redeem(address indexed from, address indexed owner, uint amount, uint strike, uint id);
     
-    constructor(address _reward, address _stake, address _buyWith, address _treasury) {
+    constructor(
+        address _reward, 
+        address _stake, 
+        address _buyWith, 
+        address _treasury,
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
         reward = _reward;
         stake = _stake;
         buyWith = _buyWith;
