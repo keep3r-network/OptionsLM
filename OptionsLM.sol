@@ -34,18 +34,17 @@ contract OptionsLM {
     uint public nextIndex;
     
     function _claim(uint amount) internal returns (uint) {
-        uint _twap = oracle.assetToAsset(reward, amount, buyWith, 3600);
-        options.push(option(msg.sender, amount, _twap, block.timestamp+OPTION_EXPIRY, false));
+        uint _strike = oracle.assetToAsset(reward, amount, buyWith, 3600);
+        options.push(option(msg.sender, amount, _strike, block.timestamp+OPTION_EXPIRY, false));
         return nextIndex++;
     }
     
     function redeem(uint id) external {
         option storage _opt = options[id];
-        require(_opt.owner == msg.sender);
         require(_opt.expiry >= block.timestamp);
         require(!_opt.exercised);
         _safeTransferFrom(buyWith, msg.sender, treasury, _opt.strike);
-        _safeTransfer(reward, msg.sender, _opt.amount);
+        _safeTransfer(reward, _opt.owner, _opt.amount);
         _opt.exercised = true;
         options[id] = _opt;
     }
@@ -148,11 +147,7 @@ contract OptionsLM {
         _;
     }
     
-    function _safeTransfer(
-        address token,
-        address to,
-        uint256 value
-    ) internal {
+    function _safeTransfer(address token, address to, uint256 value) internal {
         (bool success, bytes memory data) =
             token.call(abi.encodeWithSelector(erc20.transfer.selector, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))));
