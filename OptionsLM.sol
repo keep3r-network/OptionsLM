@@ -34,7 +34,7 @@ contract OptionsLM {
     uint public nextIndex;
     
     function _claim(uint amount) internal returns (uint) {
-        uint _twap = oracle.assetToAsset(reward, decimals, buyWith, 3600);
+        uint _twap = oracle.assetToAsset(reward, amount, buyWith, 3600);
         options.push(option(msg.sender, amount, _twap, block.timestamp+OPTION_EXPIRY, false));
         return nextIndex++;
     }
@@ -44,7 +44,7 @@ contract OptionsLM {
         require(_opt.owner == msg.sender);
         require(_opt.expiry >= block.timestamp);
         require(!_opt.exercised);
-        _safeTransferFrom(buyWith, msg.sender, treasury, _opt.amount * _opt.strike / decimals);
+        _safeTransferFrom(buyWith, msg.sender, treasury, _opt.strike);
         _safeTransfer(reward, msg.sender, _opt.amount);
         _opt.exercised = true;
         options[id] = _opt;
@@ -54,7 +54,6 @@ contract OptionsLM {
     address immutable public stake;
     address immutable public buyWith;
     address immutable public treasury;
-    uint immutable public decimals;
     
     v3oracle constant oracle = v3oracle(0x0F1f5A87f99f0918e6C81F16E59F3518698221Ff);
     
@@ -79,7 +78,6 @@ contract OptionsLM {
         stake = _stake;
         buyWith = _buyWith;
         treasury = _treasury;
-        decimals = 10**erc20(_reward).decimals();
     }
 
     function lastTimeRewardApplicable() public view returns (uint) {
