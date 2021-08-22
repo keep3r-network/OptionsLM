@@ -101,8 +101,7 @@ contract OptionsLM {
     
     function redeem(uint id) external {
         option storage _opt = options[id];
-        require(_opt.expiry >= block.timestamp);
-        require(!_opt.exercised);
+        require(_opt.expiry >= block.timestamp && !_opt.exercised);
         _safeTransferFrom(buyWith, msg.sender, treasury, _opt.strike);
         _safeTransfer(reward, _opt.owner, _opt.amount);
         _opt.exercised = true;
