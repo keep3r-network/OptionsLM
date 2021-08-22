@@ -114,11 +114,11 @@ contract OptionsLM {
         _safeTransfer(stake, msg.sender, amount);
     }
 
-    function getReward() public update(msg.sender) {
+    function getReward() public update(msg.sender) returns (uint id) {
         uint _reward = rewards[msg.sender];
         if (_reward > 0) {
             rewards[msg.sender] = 0;
-            _claim(_reward);
+            id = _claim(_reward);
         }
     }
 
