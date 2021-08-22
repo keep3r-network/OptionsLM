@@ -79,7 +79,7 @@ contract OptionsLM {
         stake = _stake;
         buyWith = _buyWith;
         treasury = _treasury;
-        decimals = 10**erc20(reward).decimals();
+        decimals = 10**erc20(_reward).decimals();
     }
 
     function lastTimeRewardApplicable() public view returns (uint) {
