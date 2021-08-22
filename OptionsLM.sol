@@ -46,6 +46,11 @@ contract OptionsLM {
     uint public totalSupply;
     mapping(address => uint) public balanceOf;
     
+    event Deposit(address indexed from, uint amount);
+    event Withdraw(address indexed to, uint amount);
+    event Created(address indexed owner, uint amount, uint strike, uint expiry, uint id);
+    event Redeem(address indexed from, address indexed owner, uint amount, uint strike, uint id);
+    
     constructor(address _reward, address _stake, address _buyWith, address _treasury) {
         reward = _reward;
         stake = _stake;
@@ -76,17 +81,21 @@ contract OptionsLM {
         totalSupply += amount;
         balanceOf[msg.sender] += amount;
         _safeTransferFrom(stake, msg.sender, address(this), amount);
+        emit Deposit(msg.sender, amount);
     }
 
     function withdraw(uint amount) public update(msg.sender) {
         totalSupply -= amount;
         balanceOf[msg.sender] -= amount;
         _safeTransfer(stake, msg.sender, amount);
+        emit Withdraw(msg.sender, amount);
     }
     
     function _claim(uint amount) internal returns (uint) {
         uint _strike = oracle.assetToAsset(reward, amount, buyWith, 3600);
-        options.push(option(msg.sender, amount, _strike, block.timestamp+OPTION_EXPIRY, false));
+        uint _expiry = block.timestamp + OPTION_EXPIRY;
+        options.push(option(msg.sender, amount, _strike, _expiry, false));
+        emit Created(msg.sender, amount, _strike, _expiry, nextIndex);
         return nextIndex++;
     }
     
@@ -97,6 +106,7 @@ contract OptionsLM {
         _safeTransfer(reward, _opt.owner, _opt.amount);
         _opt.exercised = true;
         options[id] = _opt;
+        emit Redeem(msg.sender, _opt.owner, _opt.amount, _opt.strike, id);
     }
 
     function getReward() public update(msg.sender) returns (uint id) {
