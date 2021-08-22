@@ -17,38 +17,10 @@ interface erc20 {
 }
 
 interface v3oracle {
-    function assetToAsset(address, uint, address, uint) external view returns (uint);
+    function assetToAsset(address from, uint amount, address to, uint twap_duration) external view returns (uint);
 }
 
 contract OptionsLM {
-    
-    struct option {
-        address owner;
-        uint amount;
-        uint strike;
-        uint expiry;
-        bool exercised; 
-    }
-    
-    option[] public options;
-    uint public nextIndex;
-    
-    function _claim(uint amount) internal returns (uint) {
-        uint _strike = oracle.assetToAsset(reward, amount, buyWith, 3600);
-        options.push(option(msg.sender, amount, _strike, block.timestamp+OPTION_EXPIRY, false));
-        return nextIndex++;
-    }
-    
-    function redeem(uint id) external {
-        option storage _opt = options[id];
-        require(_opt.expiry >= block.timestamp);
-        require(!_opt.exercised);
-        _safeTransferFrom(buyWith, msg.sender, treasury, _opt.strike);
-        _safeTransfer(reward, _opt.owner, _opt.amount);
-        _opt.exercised = true;
-        options[id] = _opt;
-    }
-    
     address immutable public reward;
     address immutable public stake;
     address immutable public buyWith;
@@ -68,6 +40,17 @@ contract OptionsLM {
     
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
+    
+    struct option {
+        address owner;
+        uint amount;
+        uint strike;
+        uint expiry;
+        bool exercised; 
+    }
+    
+    option[] public options;
+    uint public nextIndex;
     
     uint public totalSupply;
     mapping(address => uint) public balanceOf;
@@ -108,6 +91,22 @@ contract OptionsLM {
         totalSupply -= amount;
         balanceOf[msg.sender] -= amount;
         _safeTransfer(stake, msg.sender, amount);
+    }
+    
+    function _claim(uint amount) internal returns (uint) {
+        uint _strike = oracle.assetToAsset(reward, amount, buyWith, 3600);
+        options.push(option(msg.sender, amount, _strike, block.timestamp+OPTION_EXPIRY, false));
+        return nextIndex++;
+    }
+    
+    function redeem(uint id) external {
+        option storage _opt = options[id];
+        require(_opt.expiry >= block.timestamp);
+        require(!_opt.exercised);
+        _safeTransferFrom(buyWith, msg.sender, treasury, _opt.strike);
+        _safeTransfer(reward, _opt.owner, _opt.amount);
+        _opt.exercised = true;
+        options[id] = _opt;
     }
 
     function getReward() public update(msg.sender) returns (uint id) {
