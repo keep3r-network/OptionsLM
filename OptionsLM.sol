@@ -1,19 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.6;
 
-library Math {
-    function min(uint a, uint b) internal pure returns (uint) {
-        return a < b ? a : b;
-    }
-}
-
 interface erc20 {
-    function totalSupply() external view returns (uint256);
     function transfer(address recipient, uint amount) external returns (bool);
-    function decimals() external view returns (uint8);
     function balanceOf(address) external view returns (uint);
     function transferFrom(address sender, address recipient, uint amount) external returns (bool);
-    function approve(address spender, uint value) external returns (bool);
 }
 
 interface v3oracle {
@@ -63,7 +54,7 @@ contract OptionsLM {
     }
 
     function lastTimeRewardApplicable() public view returns (uint) {
-        return Math.min(block.timestamp, periodFinish);
+        return block.timestamp < periodFinish ? block.timestamp : periodFinish;
     }
 
     function rewardPerToken() public view returns (uint) {
