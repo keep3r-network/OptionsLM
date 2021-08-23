@@ -636,7 +636,7 @@ contract OptionsLM is ERC721 {
         _deposit(amount, recipient);
     }
 
-    function _deposit(uint amount, address to) internal update(msg.sender) {
+    function _deposit(uint amount, address to) internal update(to) {
         _totalSupply += amount;
         _balanceOf[to] += amount;
         _safeTransferFrom(stake, msg.sender, address(this), amount);
