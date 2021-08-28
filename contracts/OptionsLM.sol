@@ -80,7 +80,7 @@ library EnumerableSet {
         bytes32[] _values;
         mapping (bytes32 => uint) _indexes;
     }
-    
+
     function _add(Set storage set, bytes32 value) private returns (bool) {
         if (!_contains(set, value)) {
             set._values.push(value);
@@ -90,7 +90,7 @@ library EnumerableSet {
             return false;
         }
     }
-    
+
     function _remove(Set storage set, bytes32 value) private returns (bool) {
         // We read and store the value's index to prevent multiple reads from the same storage slot
         uint valueIndex = set._indexes[value];
@@ -124,64 +124,64 @@ library EnumerableSet {
             return false;
         }
     }
-    
+
     function _contains(Set storage set, bytes32 value) private view returns (bool) {
         return set._indexes[value] != 0;
     }
-    
+
     function _length(Set storage set) private view returns (uint) {
         return set._values.length;
     }
-    
+
     function _at(Set storage set, uint index) private view returns (bytes32) {
         require(set._values.length > index, "EnumerableSet: index out of bounds");
         return set._values[index];
     }
-    
+
     struct AddressSet {
         Set _inner;
     }
-    
+
     function add(AddressSet storage set, address value) internal returns (bool) {
         return _add(set._inner, bytes32(uint(uint160(value))));
     }
-    
+
     function remove(AddressSet storage set, address value) internal returns (bool) {
         return _remove(set._inner, bytes32(uint(uint160(value))));
     }
-    
+
     function contains(AddressSet storage set, address value) internal view returns (bool) {
         return _contains(set._inner, bytes32(uint(uint160(value))));
     }
-    
+
     function length(AddressSet storage set) internal view returns (uint) {
         return _length(set._inner);
     }
-    
+
     function at(AddressSet storage set, uint index) internal view returns (address) {
         return address(uint160(uint(_at(set._inner, index))));
     }
-    
+
     struct UintSet {
         Set _inner;
     }
-    
+
     function add(UintSet storage set, uint value) internal returns (bool) {
         return _add(set._inner, bytes32(value));
     }
-    
+
     function remove(UintSet storage set, uint value) internal returns (bool) {
         return _remove(set._inner, bytes32(value));
     }
-    
+
     function contains(UintSet storage set, uint value) internal view returns (bool) {
         return _contains(set._inner, bytes32(value));
     }
-    
+
     function length(UintSet storage set) internal view returns (uint) {
         return _length(set._inner);
     }
-    
+
     function at(UintSet storage set, uint index) internal view returns (uint) {
         return uint(_at(set._inner, index));
     }
@@ -197,7 +197,7 @@ library EnumerableMap {
         MapEntry[] _entries;
         mapping (bytes32 => uint) _indexes;
     }
-    
+
     function _set(Map storage map, bytes32 key, bytes32 value) private returns (bool) {
         // We read and store the key's index to prevent multiple reads from the same storage slot
         uint keyIndex = map._indexes[key];
@@ -213,7 +213,7 @@ library EnumerableMap {
             return false;
         }
     }
-    
+
     function _remove(Map storage map, bytes32 key) private returns (bool) {
         // We read and store the key's index to prevent multiple reads from the same storage slot
         uint keyIndex = map._indexes[key];
@@ -247,61 +247,61 @@ library EnumerableMap {
             return false;
         }
     }
-    
+
     function _contains(Map storage map, bytes32 key) private view returns (bool) {
         return map._indexes[key] != 0;
     }
-    
+
     function _length(Map storage map) private view returns (uint) {
         return map._entries.length;
     }
-    
+
     function _at(Map storage map, uint index) private view returns (bytes32, bytes32) {
         require(map._entries.length > index, "EnumerableMap: index out of bounds");
 
         MapEntry storage entry = map._entries[index];
         return (entry._key, entry._value);
     }
-    
+
     function _get(Map storage map, bytes32 key) private view returns (bytes32) {
         return _get(map, key, "EnumerableMap: nonexistent key");
     }
-    
+
     function _get(Map storage map, bytes32 key, string memory errorMessage) private view returns (bytes32) {
         uint keyIndex = map._indexes[key];
         require(keyIndex != 0, errorMessage); // Equivalent to contains(map, key)
         return map._entries[keyIndex - 1]._value; // All indexes are 1-based
     }
-    
+
     struct UintToAddressMap {
         Map _inner;
     }
-    
+
     function set(UintToAddressMap storage map, uint key, address value) internal returns (bool) {
         return _set(map._inner, bytes32(key), bytes32(uint(uint160(value))));
     }
-    
+
     function remove(UintToAddressMap storage map, uint key) internal returns (bool) {
         return _remove(map._inner, bytes32(key));
     }
-    
+
     function contains(UintToAddressMap storage map, uint key) internal view returns (bool) {
         return _contains(map._inner, bytes32(key));
     }
-    
+
     function length(UintToAddressMap storage map) internal view returns (uint) {
         return _length(map._inner);
     }
-    
+
     function at(UintToAddressMap storage map, uint index) internal view returns (uint, address) {
         (bytes32 key, bytes32 value) = _at(map._inner, index);
         return (uint(key), address(uint160(uint(value))));
     }
-    
+
     function get(UintToAddressMap storage map, uint key) internal view returns (address) {
         return address(uint160(uint(_get(map._inner, bytes32(key)))));
     }
-    
+
     function get(UintToAddressMap storage map, uint key, string memory errorMessage) internal view returns (address) {
         return address(uint160(uint(_get(map._inner, bytes32(key), errorMessage))));
     }
@@ -311,7 +311,7 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableMap for EnumerableMap.UintToAddressMap;
     using Strings for uint;
-    
+
     bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
     mapping (address => EnumerableSet.UintSet) private _holderTokens;
     EnumerableMap.UintToAddressMap private _tokenOwners;
@@ -324,7 +324,7 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
     bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
     bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
-    
+
     constructor (string memory __name, string memory __symbol) {
         _name = __name;
         _symbol = __symbol;
@@ -334,25 +334,25 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
         _registerInterface(_INTERFACE_ID_ERC721_ENUMERABLE);
     }
-    
+
     function balanceOf(address owner) public view override returns (uint) {
         require(owner != address(0), "ERC721: balance query for the zero address");
 
         return _holderTokens[owner].length();
     }
-    
+
     function ownerOf(uint tokenId) public view override returns (address) {
         return _tokenOwners.get(tokenId, "ERC721: owner query for nonexistent token");
     }
-    
+
     function name() public view override returns (string memory) {
         return _name;
     }
-    
+
     function symbol() public view override returns (string memory) {
         return _symbol;
     }
-    
+
     function tokenURI(uint tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
@@ -369,25 +369,25 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
         // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
         return string(abi.encodePacked(_baseURI, tokenId.toString()));
     }
-    
+
     function baseURI() public view returns (string memory) {
         return _baseURI;
     }
-    
+
     function tokenOfOwnerByIndex(address owner, uint index) public view override returns (uint) {
         return _holderTokens[owner].at(index);
     }
-    
+
     function totalSupply() public view override returns (uint) {
         // _tokenOwners are indexed by tokenIds, so .length() returns the number of tokenIds
         return _tokenOwners.length();
     }
-    
+
     function tokenByIndex(uint index) public view override returns (uint) {
         (uint tokenId, ) = _tokenOwners.at(index);
         return tokenId;
     }
-    
+
     function approve(address to, uint tokenId) public virtual override {
         address owner = ownerOf(tokenId);
         require(to != owner, "ERC721: approval to current owner");
@@ -398,64 +398,64 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
 
         _approve(to, tokenId);
     }
-    
+
     function getApproved(uint tokenId) public view override returns (address) {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
 
         return _tokenApprovals[tokenId];
     }
-    
+
     function setApprovalForAll(address operator, bool approved) public virtual override {
         require(operator != msg.sender, "ERC721: approve to caller");
 
         _operatorApprovals[msg.sender][operator] = approved;
         emit ApprovalForAll(msg.sender, operator, approved);
     }
-    
+
     function isApprovedForAll(address owner, address operator) public view override returns (bool) {
         return _operatorApprovals[owner][operator];
     }
-    
+
     function transferFrom(address from, address to, uint tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
 
         _transfer(from, to, tokenId);
     }
-    
+
     function safeTransferFrom(address from, address to, uint tokenId) public virtual override {
         safeTransferFrom(from, to, tokenId, "");
     }
-    
+
     function safeTransferFrom(address from, address to, uint tokenId, bytes memory _data) public virtual override {
         require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: transfer caller is not owner nor approved");
         _safeTransfer(from, to, tokenId, _data);
     }
-    
+
     function _safeTransfer(address from, address to, uint tokenId, bytes memory _data) internal virtual {
         _transfer(from, to, tokenId);
         require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
     }
-    
+
     function _exists(uint tokenId) internal view returns (bool) {
         return _tokenOwners.contains(tokenId);
     }
-    
+
     function _isApprovedOrOwner(address spender, uint tokenId) internal view returns (bool) {
         require(_exists(tokenId), "ERC721: operator query for nonexistent token");
         address owner = ownerOf(tokenId);
         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
     }
-    
+
     function _safeMint(address to, uint tokenId) internal virtual {
         _safeMint(to, tokenId, "");
     }
-    
+
     function _safeMint(address to, uint tokenId, bytes memory _data) internal virtual {
         _mint(to, tokenId);
         require(_checkOnERC721Received(address(0), to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
     }
-    
+
     function _mint(address to, uint tokenId) internal virtual {
         require(to != address(0), "ERC721: mint to the zero address");
         require(!_exists(tokenId), "ERC721: token already minted");
@@ -468,7 +468,7 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
 
         emit Transfer(address(0), to, tokenId);
     }
-    
+
     function _burn(uint tokenId) internal virtual {
         address owner = ownerOf(tokenId);
 
@@ -488,7 +488,7 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
 
         emit Transfer(owner, address(0), tokenId);
     }
-    
+
     function _transfer(address from, address to, uint tokenId) internal virtual {
         require(ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
         require(to != address(0), "ERC721: transfer to the zero address");
@@ -505,16 +505,16 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
 
         emit Transfer(from, to, tokenId);
     }
-    
+
     function _setTokenURI(uint tokenId, string memory _tokenURI) internal virtual {
         require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
         _tokenURIs[tokenId] = _tokenURI;
     }
-    
+
     function _setBaseURI(string memory baseURI_) internal virtual {
         _baseURI = baseURI_;
     }
-    
+
     function _checkOnERC721Received(address from, address to, uint tokenId, bytes memory _data)
         private returns (bool)
     {
@@ -534,7 +534,7 @@ contract ERC721 is ERC165, IERC721, IERC721Metadata, IERC721Enumerable {
         _tokenApprovals[tokenId] = to;
         emit Approval(ownerOf(tokenId), to, tokenId);
     }
-    
+
     function _beforeTokenTransfer(address from, address to, uint tokenId) internal virtual {}
 }
 
@@ -553,45 +553,44 @@ contract OptionsLM is ERC721 {
     address immutable public stake;
     address immutable public buyWith;
     address immutable public treasury;
-    
+
     v3oracle constant oracle = v3oracle(0x0F1f5A87f99f0918e6C81F16E59F3518698221Ff);
-    
+
     uint constant DURATION = 7 days;
     uint constant PRECISION = 10 ** 18;
     uint constant TWAP_PERIOD = 3600;
     uint constant OPTION_EXPIRY = 30 days;
-    
+
     uint rewardRate;
     uint periodFinish;
     uint lastUpdateTime;
     uint rewardPerTokenStored;
-    
+
     mapping(address => uint256) public userRewardPerTokenPaid;
     mapping(address => uint256) public rewards;
-    
+
     struct option {
         uint amount;
         uint strike;
         uint expiry;
-        bool exercised; 
+        bool exercised;
     }
-    
+
     option[] public options;
     uint public nextIndex;
-    mapping(address => uint[]) _userOptions;
-    
+
     uint _totalSupply;
     mapping(address => uint) public _balanceOf;
-    
+
     event Deposit(address indexed from, uint amount);
     event Withdraw(address indexed to, uint amount);
     event Created(address indexed owner, uint amount, uint strike, uint expiry, uint id);
     event Redeem(address indexed from, address indexed owner, uint amount, uint strike, uint id);
-    
+
     constructor(
-        address _reward, 
-        address _stake, 
-        address _buyWith, 
+        address _reward,
+        address _stake,
+        address _buyWith,
         address _treasury,
         string memory _name,
         string memory _symbol
@@ -600,10 +599,6 @@ contract OptionsLM is ERC721 {
         stake = _stake;
         buyWith = _buyWith;
         treasury = _treasury;
-    }
-    
-    function userOptions(address user) external view returns (uint[] memory) {
-        return _userOptions[user];
     }
 
     function lastTimeRewardApplicable() public view returns (uint) {
@@ -663,23 +658,23 @@ contract OptionsLM is ERC721 {
     function withdraw(uint amount) external {
         _withdraw(amount, msg.sender);
     }
-    
+
     function _withdraw(uint amount, address to) internal update(msg.sender) {
         _totalSupply -= amount;
         _balanceOf[msg.sender] -= amount;
         _safeTransfer(stake, to, amount);
         emit Withdraw(msg.sender, amount);
     }
-    
-    function _claim(uint amount) internal returns (uint) {
+
+    function _claim(uint amount) internal {
         uint _strike = oracle.assetToAsset(reward, amount, buyWith, 3600);
         uint _expiry = block.timestamp + OPTION_EXPIRY;
         options.push(option(amount, _strike, _expiry, false));
         _safeMint(msg.sender, nextIndex);
         emit Created(msg.sender, amount, _strike, _expiry, nextIndex);
-        return nextIndex++;
+        nextIndex++;
     }
-    
+
     function redeem(uint id) external {
         require(_isApprovedOrOwner(msg.sender, id));
         option storage _opt = options[id];
@@ -694,7 +689,7 @@ contract OptionsLM is ERC721 {
         uint _reward = rewards[msg.sender];
         if (_reward > 0) {
             rewards[msg.sender] = 0;
-            _userOptions[msg.sender].push(_claim(_reward));
+            _claim(_reward);
         }
     }
 
@@ -702,7 +697,7 @@ contract OptionsLM is ERC721 {
         _withdraw(_balanceOf[msg.sender], msg.sender);
         getReward();
     }
-    
+
     function notify(uint amount) external update(address(0)) {
         _safeTransferFrom(reward, msg.sender, address(this), amount);
         if (block.timestamp >= periodFinish) {
@@ -712,7 +707,7 @@ contract OptionsLM is ERC721 {
             uint _leftover = _remaining * rewardRate;
             rewardRate = (amount + _leftover) / DURATION;
         }
-        
+
         lastUpdateTime = block.timestamp;
         periodFinish = block.timestamp + DURATION;
     }
@@ -726,13 +721,13 @@ contract OptionsLM is ERC721 {
         }
         _;
     }
-    
+
     function _safeTransfer(address token, address to, uint256 value) internal {
         (bool success, bytes memory data) =
             token.call(abi.encodeWithSelector(erc20.transfer.selector, to, value));
         require(success && (data.length == 0 || abi.decode(data, (bool))));
     }
-    
+
     function _safeTransferFrom(address token, address from, address to, uint256 value) internal {
         (bool success, bytes memory data) =
             token.call(abi.encodeWithSelector(erc20.transferFrom.selector, from, to, value));
