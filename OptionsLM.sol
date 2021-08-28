@@ -578,6 +578,7 @@ contract OptionsLM is ERC721 {
     
     option[] public options;
     uint public nextIndex;
+    mapping(address => uint[]) _userOptions;
     
     uint _totalSupply;
     mapping(address => uint) public _balanceOf;
@@ -599,6 +600,10 @@ contract OptionsLM is ERC721 {
         stake = _stake;
         buyWith = _buyWith;
         treasury = _treasury;
+    }
+    
+    function userOptions(address user) external view returns (uint[] memory) {
+        return _userOptions[user];
     }
 
     function lastTimeRewardApplicable() public view returns (uint) {
@@ -679,18 +684,17 @@ contract OptionsLM is ERC721 {
         require(_isApprovedOrOwner(msg.sender, id));
         option storage _opt = options[id];
         require(_opt.expiry >= block.timestamp && !_opt.exercised);
+        _opt.exercised = true;
         _safeTransferFrom(buyWith, msg.sender, treasury, _opt.strike);
         _safeTransfer(reward, msg.sender, _opt.amount);
-        _opt.exercised = true;
-        options[id] = _opt;
         emit Redeem(msg.sender, msg.sender, _opt.amount, _opt.strike, id);
     }
 
-    function getReward() public update(msg.sender) returns (uint id) {
+    function getReward() public update(msg.sender) {
         uint _reward = rewards[msg.sender];
         if (_reward > 0) {
             rewards[msg.sender] = 0;
-            id = _claim(_reward);
+            _userOptions[msg.sender].push(_claim(_reward));
         }
     }
 
