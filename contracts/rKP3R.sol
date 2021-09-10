@@ -902,11 +902,12 @@ contract RedeemableKeep3r {
     function refund(uint[] memory _ids) external {
         for (uint i = 0; i < _ids.length; i++) {
             option storage _opt = options[_ids[i]];
-            require(_opt.expiry < block.timestamp && !_opt.exercised);
-            _opt.exercised = true;
-            _safeTransfer(KP3R, treasury, _opt.amount);
-            oKP3R.burn(_ids[i]);
-            emit Refund(msg.sender, oKP3R.ownerOf(_ids[i]), _opt.amount, _opt.strike, _ids[i]);
+            if (_opt.expiry < block.timestamp && !_opt.exercised) {
+                _opt.exercised = true;
+                _safeTransfer(KP3R, treasury, _opt.amount);
+                oKP3R.burn(_ids[i]);
+                emit Refund(msg.sender, oKP3R.ownerOf(_ids[i]), _opt.amount, _opt.strike, _ids[i]);
+            }
         }
     }
 
