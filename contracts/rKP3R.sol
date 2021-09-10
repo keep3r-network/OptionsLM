@@ -781,8 +781,8 @@ interface erc20 {
 }
 
 contract Keep3rOptions is ERC721Enumerable {
-    string constant name = "Keep3r Options";
-    string constant symbol = "oKP3R";
+    string public constant name = "Keep3r Options";
+    string public constant symbol = "oKP3R";
     address immutable rKP3R;
 
     constructor() {
