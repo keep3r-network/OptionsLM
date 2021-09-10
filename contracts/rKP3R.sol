@@ -795,6 +795,12 @@ contract Keep3rOptions is ERC721Enumerable {
         return true;
     }
 
+    function burn(uint _id) external returns (bool) {
+        require(msg.sender == rKP3R);
+        _burn(_id);
+        return true;
+    }
+
     function isApprovedOrOwner(address _addr, uint _id) external view returns (bool) {
         return _isApprovedOrOwner(_addr, _id);
     }
@@ -899,6 +905,7 @@ contract RedeemableKeep3r {
             require(_opt.expiry < block.timestamp && !_opt.exercised);
             _opt.exercised = true;
             _safeTransfer(KP3R, treasury, _opt.amount);
+            oKP3R.burn(_ids[i]);
             emit Refund(msg.sender, oKP3R.ownerOf(_ids[i]), _opt.amount, _opt.strike, _ids[i]);
         }
     }
@@ -998,6 +1005,7 @@ contract RedeemableKeep3r {
         _opt.exercised = true;
         _safeTransferFrom(USDC, msg.sender, treasury, _opt.strike);
         _safeTransfer(KP3R, msg.sender, _opt.amount);
+        oKP3R.burn(id);
         emit Redeem(msg.sender, msg.sender, _opt.amount, _opt.strike, id);
     }
 
