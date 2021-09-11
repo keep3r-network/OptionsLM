@@ -905,8 +905,9 @@ contract RedeemableKeep3r {
             if (_opt.expiry < block.timestamp && !_opt.exercised) {
                 _opt.exercised = true;
                 _safeTransfer(KP3R, treasury, _opt.amount);
+                address _owner = oKP3R.ownerOf(_ids[i]);
                 oKP3R.burn(_ids[i]);
-                emit Refund(msg.sender, oKP3R.ownerOf(_ids[i]), _opt.amount, _opt.strike, _ids[i]);
+                emit Refund(msg.sender, _owner, _opt.amount, _opt.strike, _ids[i]);
             }
         }
     }
