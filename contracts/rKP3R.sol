@@ -1003,7 +1003,7 @@ contract RedeemableKeep3r {
     function redeem(uint id) external {
         require(oKP3R.isApprovedOrOwner(msg.sender, id));
         option storage _opt = options[id];
-        require(_opt.expiry >= block.timestamp && !_opt.exercised);
+        require( block.timestamp >= _opt.expiry && !_opt.exercised);
         _opt.exercised = true;
         _safeTransferFrom(USDC, msg.sender, treasury, _opt.strike);
         _safeTransfer(KP3R, msg.sender, _opt.amount);
